@@ -3,6 +3,7 @@ package mgcplog
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"time"
@@ -106,7 +107,8 @@ func (ll *LogrusLogger) log2File(le *LogEntity) error {
 			return fmt.Errorf("error opening file: %v", err)
 		}
 		defer f.Close()
-		log.SetOutput(f)
+		mw := io.MultiWriter(f, os.Stdout)
+		log.SetOutput(mw)
 	}
 	fields := &log.Fields{
 		"time":          le.Timestamp,
